@@ -1,0 +1,40 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "g3koVnz9htyH2b/mrY6vrXvf4aw=",
+    "authStrategies": [
+      "jwt",
+      "local"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    }
+  },
+  "postgres": {
+    "connection": "postgres://postgres:ilomon0123@localhost:5432/tumblr_mk1",
+    "ssl": false
+  },
+  "vapid": {
+    "publicKey": "BGRhvbXYp6YIfMXWu1oqU7pvPnFcxYXTmCBzxE19ObWLlXzMN32aeUHHKZQ2_Do4kkC2JiQTWytZpTunOTFOqzQ",
+    "privateKey": "-l8o8o-ynpaXqgYiTAYwhSYI3RFrXh8mn2V5Zc6PVNo",
+    "subject": "mailto:ilomon10@gmail.com"
+  }
+}
