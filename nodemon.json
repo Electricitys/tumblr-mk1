@@ -1,0 +1,8 @@
+{
+  "ignore": [
+    "lib/*.js",
+    "README",
+    "plant/",
+    "public/"
+  ]
+}
