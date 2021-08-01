@@ -5,20 +5,22 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const users = sequelizeClient.define('users', {
-    email: {
+  const patient = sequelizeClient.define('patient', {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    role: {
+    address: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: 'patient'
+    },
+    age: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    disease: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   }, {
     hooks: {
@@ -29,10 +31,13 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  users.associate = function (models) {
+  patient.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
+    const { users, devices } = models;
+    patient.hasOne(devices);
+    patient.belongsTo(users);
   };
 
-  return users;
+  return patient;
 };

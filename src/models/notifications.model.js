@@ -17,17 +17,17 @@ module.exports = function (app) {
     image: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "",
+      defaultValue: '',
     },
     logo: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "",
+      defaultValue: '',
     },
     url: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "",
+      defaultValue: '',
     }
   }, {
     hooks: {

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useClient } from "./Client";
 
 const AccountContext = createContext(null);
@@ -11,7 +11,7 @@ export const AccountProvider = ({ children }) => {
       return true;
     } else if (user === null) {
       return null;
-    } else if (user === false ) {
+    } else if (user === false) {
       return false;
     }
   }, [user]);
@@ -21,15 +21,15 @@ export const AccountProvider = ({ children }) => {
       email: email,
       password: password
     });
-    console.log(ret);
+    setUser(ret["user"]);
     return ret;
   }
 
   const check = useCallback(async (force) => {
     if (client === null) return;
     try {
-      const user = await client.reAuthenticate(force);
-      setUser(user);
+      const res = await client.reAuthenticate(force);
+      setUser(res["user"]);
     } catch (err) {
       console.error(err);
       setUser(false);
@@ -53,5 +53,6 @@ export const AccountProvider = ({ children }) => {
 }
 
 export const useAccount = () => {
-
+  const account = useContext(AccountContext);
+  return account;
 }

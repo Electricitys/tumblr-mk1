@@ -24,6 +24,5 @@ export const ClientProvider = ({ children }) => {
 
 export const useClient = () => {
   const client = useContext(ClientContext);
-  console.log(client);
   return client;
 }

@@ -7,7 +7,7 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const devices = sequelizeClient.define('devices', {
-    _id: {
+    id: {
       type: DataTypes.UUID,
       primaryKey: true,
       unique: true,
@@ -16,7 +16,7 @@ module.exports = function (app) {
     label: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "Device"
+      defaultValue: 'Device'
     },
     config: {
       type: DataTypes.JSONB,
@@ -39,9 +39,9 @@ module.exports = function (app) {
   devices.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    const { users } = models;
+    const { patient } = models;
 
-    devices.belongsTo(users);
+    devices.belongsTo(patient);
   };
 
   return devices;

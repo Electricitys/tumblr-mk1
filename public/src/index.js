@@ -1,21 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import 'normalize.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import './index.css';
-import App from './App';
+
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { ClientProvider } from './components/Client';
 import { AccountProvider } from './components/Account';
+import { Router } from './Router';
+import { ThemeProvider } from '@emotion/react';
+
+import theme from "./components/theme";
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <ThemeProvider theme={theme}>
     <ClientProvider>
       <AccountProvider>
-        <App />
+        <Router />
       </AccountProvider>
     </ClientProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </ThemeProvider>
+  // </React.StrictMode>
+  , document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

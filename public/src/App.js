@@ -1,36 +1,18 @@
 import React from 'react';
+import { useAccount } from "./components/Account";
+import { Doctor } from './pages/Doctor';
+import { Patient } from './pages/Patient';
 
-import io from "socket.io-client";
-import feathers from "@feathersjs/feathers";
-import socketio from "@feathersjs/socketio-client";
-import { useSubscription } from './components/Subscription';
-
-const socket = io("http://localhost:3030");
-const client = feathers();
-
-client.configure(socketio(socket));
-
-function App() {
-  const { isSubscripted } = useSubscription();
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        {isSubscripted && <div>subscribed</div>}
-      </header>
-    </div >
-  );
+function App(props) {
+  const { user } = useAccount();
+  switch (user.role) {
+    case "patient":
+      return (<Patient {...props} />);
+    case "doctor":
+      return (<Doctor {...props} />);
+    default:
+      return (<div>APP</div>);
+  }
 }
 
 export default App;

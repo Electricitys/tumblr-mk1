@@ -5,8 +5,6 @@ import { Landing } from "../pages/Landing";
 
 export const PrivateRoute = (props) => {
   const { authenticated } = useAccount();
-  console.log("Private Route");
-  console.log(authenticated);
   const Loading = (
     <Spinner size={100} />
   )

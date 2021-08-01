@@ -5,7 +5,7 @@ module.exports = function (app) {
   const sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
     dialectOptions: {
-      ssl: app.get("postgres").ssl
+      ssl: app.get('postgres').ssl
     },
     logging: false,
     define: {

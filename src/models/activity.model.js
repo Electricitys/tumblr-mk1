@@ -1,23 +1,16 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-const { UUIDV4 } = require('sequelize');
 const Sequelize = require('sequelize');
 const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const datalake = sequelizeClient.define('datalake', {
-    _id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      unique: true,
-      defaultValue: UUIDV4
-    },
-    activityMessage: {
+  const activity = sequelizeClient.define('activity', {
+    type: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    activityType: {
+    message: {
       type: DataTypes.STRING,
       allowNull: false
     }
@@ -30,14 +23,13 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  datalake.associate = function (models) {
+  activity.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    const { users, devices } = models;
-
-    datalake.belongsTo(users);
-    datalake.belongsTo(devices);
+    const { patient, devices } = models;
+    activity.belongsTo(devices);
+    activity.belongsTo(patient);
   };
 
-  return datalake;
+  return activity;
 };

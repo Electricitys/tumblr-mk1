@@ -1,5 +1,5 @@
 import {
-  HashRouter as Router,
+  HashRouter,
   Switch,
   Route
 } from "react-router-dom";
@@ -8,15 +8,14 @@ import { PrivateRoute } from "./components/PrivateRoute";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 
-const Router = () => {
-  console.log("router");
+export const Router = () => {
   return (
-    <Router>
+    <HashRouter>
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <PrivateRoute path="/" component={App} />
       </Switch>
-    </Router>
+    </HashRouter>
   )
 }

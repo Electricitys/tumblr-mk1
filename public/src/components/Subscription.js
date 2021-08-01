@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useClient } from './Client';
 import { urlB64ToUint8Array } from './helper';
 
+const SubscriptionContext = createContext(null);
 
-export const useSubscription = () => {
+export const SubscriptionProvider = ({ children }) => {
   const client = useClient();
   const [isSubscripted, setIsSubscripted] = useState(null);
   const subscribe = async () => {
@@ -41,9 +42,18 @@ export const useSubscription = () => {
     subscribe();
     checkSubscription();
   }, [isSubscripted]); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  return (
+    <SubscriptionContext.Provider value={{
+      isSubscripted,
+      subscribe
+    }}>
+      {children}
+    </SubscriptionContext.Provider>
+  )
+}
 
-  return {
-    isSubscripted,
-    subscribe
-  };
+export const useSubscription = () => {
+  const subscribe = useContext(SubscriptionContext);
+  return subscribe;
 }
