@@ -1,9 +1,7 @@
-import { Box } from "../../components/Grid"
+import { Layout } from "./Layout";
 
 export const Doctor = () => {
   return (
-    <Box>
-      Doctor
-    </Box>
+    <Layout />
   )
 }

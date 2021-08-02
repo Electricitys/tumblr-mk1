@@ -15,6 +15,7 @@ export const AccountProvider = ({ children }) => {
       return false;
     }
   }, [user]);
+
   const login = async (email, password) => {
     let ret = await client.authenticate({
       strategy: "local",
@@ -26,7 +27,6 @@ export const AccountProvider = ({ children }) => {
   }
 
   const check = useCallback(async (force) => {
-    if (client === null) return;
     try {
       const res = await client.reAuthenticate(force);
       setUser(res["user"]);
@@ -35,6 +35,10 @@ export const AccountProvider = ({ children }) => {
       setUser(false);
     }
   }, [client]);
+
+  const logout = (force) => {
+    return client.logout(force);
+  };
 
   useEffect(() => {
     if (user) return;
@@ -45,7 +49,8 @@ export const AccountProvider = ({ children }) => {
       user,
       authenticated,
       login,
-      check
+      check,
+      logout
     }}>
       {children}
     </AccountContext.Provider>

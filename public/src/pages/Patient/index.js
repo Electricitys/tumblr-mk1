@@ -1,7 +1,7 @@
-import { Router } from "./Router"
+import { Layout } from "./Layout"
 
 export const Patient = () => {
   return (
-    <Router />
+    <Layout />
   )
 }
