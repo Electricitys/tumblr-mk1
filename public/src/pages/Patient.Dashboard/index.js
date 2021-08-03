@@ -5,6 +5,7 @@ import { Button, Text } from "@blueprintjs/core";
 import { useHistory } from "react-router-dom";
 import { Tumblr } from "./Tumblr";
 import { useState } from "react";
+import { DeviceConnection } from "./DeviceConnection";
 
 export const Dashboard = () => {
   const { user } = useAccount();
@@ -103,7 +104,9 @@ export const Dashboard = () => {
                     fontSize: 1,
                     color: selected ? "blue.4" : "gray.4"
                   }}>{value["field"]}</Box>
-                  <Box sx={{ fontSize: 2 }}>{value["value"]}</Box>
+                  <Box sx={{ fontSize: 2 }}>
+                    {value["type"] === "ctrl" ? <DeviceConnection /> : value["value"]}
+                  </Box>
                 </Box>
               )
             })}
@@ -129,7 +132,7 @@ export const Dashboard = () => {
               intent="primary"
               outlined={true}
               text="Activity"
-              onClick={(e)=> {
+              onClick={(e) => {
                 history.push("/activity");
               }}
             />

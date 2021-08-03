@@ -43,7 +43,11 @@ exports.Users = class Users extends Service {
           as: "doctor"
         }, {
           model: this.app.service("patient").Model,
-          as: "patient"
+          as: "patient",
+          include: [{
+            model: this.app.service("devices").Model,
+            as: "device"
+          }]
         }]
       }
     });

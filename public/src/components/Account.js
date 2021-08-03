@@ -6,6 +6,7 @@ const AccountContext = createContext(null);
 export const AccountProvider = ({ children }) => {
   const client = useClient();
   const [user, setUser] = useState(null);
+  const [device, setDevice] = useState(null);
   const authenticated = useMemo(() => {
     if (user) {
       return true;
@@ -41,12 +42,25 @@ export const AccountProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (user === null) return;
+    const device = {
+      id: user["patient.device.id"],
+      config: user["patient.device.config"],
+      connectionStatus: user["patient.device.connectionStatus"],
+      label: user["patient.device.label"],
+    };
+    setDevice(device);
+  }, [user]);
+
+  useEffect(() => {
     if (user) return;
     check();
   }, [user, check]);
+  
   return (
     <AccountContext.Provider value={{
       user,
+      device,
       authenticated,
       login,
       check,
