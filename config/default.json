@@ -29,12 +29,12 @@
     }
   },
   "postgres": {
-    "connection": "postgres://postgres:ilomon0123@localhost:5432/tumblr_mk1",
+    "connection": "postgres://postgres:password@localhost:5432/tumblr_mk1",
     "ssl": false
   },
   "vapid": {
-    "publicKey": "BGRhvbXYp6YIfMXWu1oqU7pvPnFcxYXTmCBzxE19ObWLlXzMN32aeUHHKZQ2_Do4kkC2JiQTWytZpTunOTFOqzQ",
-    "privateKey": "-l8o8o-ynpaXqgYiTAYwhSYI3RFrXh8mn2V5Zc6PVNo",
-    "subject": "mailto:ilomon10@gmail.com"
+    "publicKey": "VAPID_PUBLIC_KEY",
+    "privateKey": "VAPID_PRIVATE_KEY",
+    "subject": "VAPID_SUBJECT"
   }
 }
