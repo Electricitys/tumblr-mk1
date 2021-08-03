@@ -3,26 +3,26 @@ const { Service } = require('feathers-sequelize');
 exports.Devices = class Devices extends Service {
   async create(data, params) {
     const defaultValue = {
-      label: `device-${data["id"]}${Date.now()}`,
+      label: `device-${data['id']}${Date.now()}`,
       config: {
         medicine: {
           lvl1: {
-            name: "",
-            time: ""
+            name: '',
+            time: ''
           },
           lvl2: {
-            name: "",
-            time: ""
+            name: '',
+            time: ''
           },
           lvl3: {
-            name: "",
-            time: ""
+            name: '',
+            time: ''
           }
         }
       },
       connectionStatus: false,
       ...data
-    }
+    };
     return super.create(defaultValue, params);
   }
 };

@@ -1,4 +1,16 @@
 {
-  "host": "server-app.feathersjs.com",
-  "port": "PORT"
+  "host": "HOST",
+  "port": "PORT",
+  "postgres": {
+    "connection": "DATABASE_URL",
+    "ssl": {
+      "required": true,
+      "rejectUnauthorized": false
+    }
+  },
+  "vapid": {
+    "publicKey": "VAPID_PUBLIC_KEY",
+    "privateKey": "VAPID_PRIVATE_KEY",
+    "subject": "VAPID_SUBJECT"
+  }
 }

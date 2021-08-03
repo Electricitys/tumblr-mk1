@@ -9,8 +9,8 @@ exports.Patient = class Patient extends Service {
   async remove(id, params) {
     const patient = await this.get(id);
     const ret = await super.remove(id, params);
-    if (patient["device.id"]) {
-      await this.app.service("devices").remove(patient["device.id"]);
+    if (patient['device.id']) {
+      await this.app.service('devices').remove(patient['device.id']);
     }
     return ret;
   }
@@ -18,11 +18,11 @@ exports.Patient = class Patient extends Service {
   async create(data, params) {
     let ret = await super.create(data, params);
 
-    const device = await this.app.service("devices").create({
-      patientId: ret["id"]
+    const device = await this.app.service('devices').create({
+      patientId: ret['id']
     });
 
-    console.log("device created", device);
+    console.log('device created', device);
     return ret;
   }
   async get(id, params) {
@@ -30,8 +30,8 @@ exports.Patient = class Patient extends Service {
       ...params,
       sequelize: {
         include: [{
-          model: this.app.service("devices").Model,
-          as: "device"
+          model: this.app.service('devices').Model,
+          as: 'device'
         }]
       }
     });

@@ -24,6 +24,11 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
+    "install:public": "cd public && npm install",
+    "build:public": "cd public && npm run build",
+    "postinstall": "npm run install:public",
+    "postbuild": "npm run build:public",
+    "build": "npm run lint",
     "test": "npm run lint && npm run mocha",
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",

@@ -8,11 +8,11 @@ exports.Users = class Users extends Service {
   async remove(id, params) {
     const user = await this.get(id);
     const ret = super.remove(id, params);
-    if (user["role"] === "patient") {
-      await this.app.service("patient").remove(user["patient.id"]);
+    if (user['role'] === 'patient') {
+      await this.app.service('patient').remove(user['patient.id']);
     }
-    if (user["role"] === "doctor") {
-      await this.app.service("doctor").remove(user["doctor.id"]);
+    if (user['role'] === 'doctor') {
+      await this.app.service('doctor').remove(user['doctor.id']);
     }
     return ret;
   }
@@ -39,14 +39,14 @@ exports.Users = class Users extends Service {
       ...params,
       sequelize: {
         include: [{
-          model: this.app.service("doctor").Model,
-          as: "doctor"
+          model: this.app.service('doctor').Model,
+          as: 'doctor'
         }, {
-          model: this.app.service("patient").Model,
-          as: "patient",
+          model: this.app.service('patient').Model,
+          as: 'patient',
           include: [{
-            model: this.app.service("devices").Model,
-            as: "device"
+            model: this.app.service('devices').Model,
+            as: 'device'
           }]
         }]
       }
