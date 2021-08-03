@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
 import { Button } from "@blueprintjs/core";
 import { Box } from "../../components/Grid"
-import { useAccount } from "../../components/Account";
 import { User } from "./User";
 import { Alarm } from "./Alarm";
 import { DeleteButton } from "./DeleteButton";
@@ -10,7 +9,6 @@ import { DeviceInfo } from "./DeviceInfo";
 
 
 export const Settings = () => {
-  const { logout } = useAccount();
   const history = useHistory();
   return (
     <>
@@ -46,8 +44,7 @@ export const Settings = () => {
             large={true}
             icon="log-out"
             onClick={() => {
-              logout();
-              history.go(0);
+              history.push("/logout");
             }}
           />
         </Box>
