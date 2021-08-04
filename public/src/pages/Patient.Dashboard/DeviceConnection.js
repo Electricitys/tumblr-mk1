@@ -7,6 +7,7 @@ export const DeviceConnection = () => {
   const [status, setStatus] = useState(false);
   const client = useClient();
   useEffect(() => {
+    console.log(device);
     if (device === null) return;
     setStatus(device["connectionStatus"]);
     client.service("devices").on("patched", (d) => {

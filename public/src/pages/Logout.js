@@ -1,3 +1,4 @@
+import { NonIdealState } from "@blueprintjs/core";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAccount } from "../components/Account"
@@ -8,14 +9,17 @@ export const Logout = () => {
   const history = useHistory();
   useEffect(() => {
     logout();
-    setInterval(() => {
+    setTimeout(() => {
       history.push("/");
       history.go(0);
     }, 2500);
   }, []); // eslint-disable-line
   return (
-    <Box>
-      You will be redirect.
+    <Box sx={{ my: 5 }}>
+      <NonIdealState
+        title="Loggin out..."
+        description="Wait. You will redirected."
+      />
     </Box>
   )
 }

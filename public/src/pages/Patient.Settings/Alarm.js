@@ -3,9 +3,11 @@ import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import _get from "lodash.get";
-import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Spinner } from "@blueprintjs/core";
+import { Button, Callout, Classes, FormGroup, InputGroup, Spinner } from "@blueprintjs/core";
+import { TimePicker } from "@blueprintjs/datetime";
+import moment from "moment";
 
-import { Box } from "../../components/Grid"
+import { Box, Flex } from "../../components/Grid"
 import { useClient } from "../../components/Client";
 import { useAccount } from "../../components/Account";
 
@@ -84,11 +86,13 @@ export const Alarm = () => {
               !== _get(device, `config.${key}.${k}`)) {
               return false;
             }
-            setErrors({ submit: "Noting changed" });
             return true;
           }, true);
         }, true);
-        if (notApproved) return;
+        if (notApproved) {
+          setErrors({ submit: "Noting changed" });
+          return;
+        }
         try {
           await client.service("devices").patch(device["id"], {
             config: values["medicine"],
@@ -101,7 +105,7 @@ export const Alarm = () => {
         }
       }}
     >
-      {({ values, errors, handleChange, handleSubmit, resetForm, isSubmitting }) => (
+      {({ values, errors, handleChange, handleSubmit, setFieldValue, resetForm, isSubmitting }) => (
         <form onSubmit={handleSubmit}>
           {errors.submit &&
             <Callout intent="danger">
@@ -123,28 +127,54 @@ export const Alarm = () => {
                   intent={error ? "danger" : "none"}
                   helperText={value}
                 >
-                  <ControlGroup>
-                    <InputGroup
-                      fill={true}
-                      id={`f-medicine-${value}-name`}
-                      name={`medicine.${value}.name`}
-                      placeholder="name"
-                      type="text"
-                      value={_get(values, `medicine.${value}.name`)}
-                      intent={_get(errors, `medicine.${value}.name`) ? "danger" : "none"}
-                      onChange={handleChange}
-                    />
-                    <InputGroup
-                      fill={true}
+                  <Flex sx={{
+                    alignItems: "center"
+                  }}>
+                    <Box sx={{
+                      flexGrow: 1,
+                    }}>
+                      <InputGroup
+                        fill={true}
+                        id={`f-medicine-${value}-name`}
+                        name={`medicine.${value}.name`}
+                        placeholder="name"
+                        type="text"
+                        value={_get(values, `medicine.${value}.name`)}
+                        intent={_get(errors, `medicine.${value}.name`) ? "danger" : "none"}
+                        onChange={handleChange}
+                      />
+                    </Box>
+                    <Box sx={{
+                      flexShrink: 0,
+                    }}>
+                      <TimePicker
+                        id={`f-medicine-${value}-time`}
+                        name={`medicine.${value}.time`}
+                        showArrowButtons={true}
+                        placeholder="time"
+                        type="text"
+                        value={moment(_get(values, `medicine.${value}.time`), "HH:mm").toDate()}
+                        intent={_get(errors, `medicine.${value}.time`) ? "danger" : "none"}
+                        onChange={(e) => {
+                          const val = moment(e).format("HH:mm");
+                          console.log(val);
+                          setFieldValue(`medicine.${value}.time`, moment(e).format("HH:mm"));
+                        }}
+                      />
+                      {/* <TimePicker
                       id={`f-medicine-${value}-time`}
                       name={`medicine.${value}.time`}
                       placeholder="time"
                       type="text"
                       value={_get(values, `medicine.${value}.time`)}
                       intent={_get(errors, `medicine.${value}.time`) ? "danger" : "none"}
-                      onChange={handleChange}
-                    />
-                  </ControlGroup>
+                      onChange={(e) => {
+                        console.log(e);
+                        // handleChange
+                      }}
+                    /> */}
+                    </Box>
+                  </Flex>
                 </FormGroup>
               )
             })}

@@ -5,7 +5,8 @@ import { Button, Text } from "@blueprintjs/core";
 import { useHistory } from "react-router-dom";
 import { Tumblr } from "./Tumblr";
 import { useState } from "react";
-import { DeviceConnection } from "./DeviceConnection";
+import { DeviceInfo } from "./DeviceInfo";
+import { NextAlarm } from "./NextAlarm";
 
 export const Dashboard = () => {
   const { user } = useAccount();
@@ -73,43 +74,7 @@ export const Dashboard = () => {
             justifyContent: "space-around",
             my: 4,
           }}>
-            {[{
-              type: "ctrl",
-              field: "Controller",
-              value: "Connected"
-            }, {
-              type: "lvl3",
-              field: "07:00 PM",
-              value: "Amlodipine"
-            }, {
-              type: "lvl2",
-              field: "01:00 AM",
-              value: "Amoxcilin"
-            }, {
-              type: "lvl1",
-              field: "05:00 AM",
-              value: "Amlodipine"
-            }, {
-              type: "tank",
-              field: "Tank",
-              value: "Full"
-            }].map((value, idx) => {
-              const selected = selectedSegment === value["type"];
-              return (
-                <Box
-                  key={idx}
-                  onClick={() => { setSelectedSegment(selected ? null : value["type"]) }}
-                >
-                  <Box sx={{
-                    fontSize: 1,
-                    color: selected ? "blue.4" : "gray.4"
-                  }}>{value["field"]}</Box>
-                  <Box sx={{ fontSize: 2 }}>
-                    {value["type"] === "ctrl" ? <DeviceConnection /> : value["value"]}
-                  </Box>
-                </Box>
-              )
-            })}
+            <DeviceInfo selectedSegment={selectedSegment} setSelectedSegment={setSelectedSegment} />
           </Box>
           <Box sx={{
             width: "50%",
@@ -143,7 +108,7 @@ export const Dashboard = () => {
             fontFamily: "monospace",
             fontSize: 0
           }}>
-            Your next alarm at 07:00 AM
+            <NextAlarm />
           </Box>
         </Box>
       </Box>
