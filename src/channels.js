@@ -1,5 +1,3 @@
-const e = require("cors");
-
 module.exports = function (app) {
   if (typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -17,7 +15,7 @@ module.exports = function (app) {
     // real-time connection, e.g. when logging in via REST
     if (connection) {
       // Obtain the logged in user from the connection
-      const user = connection["user"];
+      const user = connection['user'];
 
       // The connection is no longer anonymous, remove it
       app.channel('anonymous').leave(connection);
@@ -37,35 +35,35 @@ module.exports = function (app) {
       // app.channel(`emails/${user.email}`).join(connection);
       // app.channel(`userIds/${user.id}`).join(connection);
 
-      if (authResult["authentication"]["strategy"] === "device") {
-        const device = connection["device"];
-        app.channel("authenticated").leave(connection);
-        app.channel(`device/${device["id"]}`).join(connection);
-        console.log("device join to", device["id"]);
-        app.service("devices").patch(device["id"], {
+      if (authResult['authentication']['strategy'] === 'device') {
+        const device = connection['device'];
+        app.channel('authenticated').leave(connection);
+        app.channel(`device/${device['id']}`).join(connection);
+        console.log('device join to', device['id']);
+        app.service('devices').patch(device['id'], {
           connectionStatus: true
-        })
+        });
       }
-      if (user["patient.id"] !== null) {
-        app.channel(`patient/${user["patient.id"]}`).join(connection);
+      if (user['patient.id'] !== null) {
+        app.channel(`patient/${user['patient.id']}`).join(connection);
       }
-      if (user["doctor.id"] !== null) {
-        app.channel(`doctor/${user["doctor.id"]}`).join(connection);
+      if (user['doctor.id'] !== null) {
+        app.channel(`doctor/${user['doctor.id']}`).join(connection);
       }
     }
   });
 
-  app.on("disconnect", (connection) => {
+  app.on('disconnect', (connection) => {
     if (connection) {
-      if (connection["device"]) {
-        const device = connection["device"];
-        app.service("devices").patch(device["id"], {
+      if (connection['device']) {
+        const device = connection['device'];
+        app.service('devices').patch(device['id'], {
           connectionStatus: false
         });
-        console.log("device disconnect", device["id"]);
+        console.log('device disconnect', device['id']);
       }
     }
-  })
+  });
 
   // eslint-disable-next-line no-unused-vars
   app.publish((data, hook) => {
@@ -90,10 +88,10 @@ module.exports = function (app) {
   //   ];
   // });
 
-  app.service("devices").publish("patched", (device) => {
+  app.service('devices').publish('patched', (device) => {
     return [
-      app.channel(`devices/${device["id"]}`),
-      app.channel(`patient/${device["patientId"]}`)
-    ]
-  })
+      app.channel(`devices/${device['id']}`),
+      app.channel(`patient/${device['patientId']}`)
+    ];
+  });
 };

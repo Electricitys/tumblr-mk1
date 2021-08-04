@@ -32,8 +32,8 @@ exports.Devices = class Devices extends Service {
       ...params,
       sequelize: {
         include: [{
-          model: this.app.service("patient").Model,
-          as: "patient"
+          model: this.app.service('patient').Model,
+          as: 'patient'
         }]
       }
     });
