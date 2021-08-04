@@ -12,7 +12,8 @@
     "secret": "g3koVnz9htyH2b/mrY6vrXvf4aw=",
     "authStrategies": [
       "jwt",
-      "local"
+      "local",
+      "device"
     ],
     "jwtOptions": {
       "header": {
@@ -26,6 +27,11 @@
     "local": {
       "usernameField": "email",
       "passwordField": "password"
+    },
+    "device": {
+      "entity": "device",
+      "service": "devices",
+      "field": "id"
     }
   },
   "postgres": {

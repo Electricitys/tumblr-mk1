@@ -1,6 +1,7 @@
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import _get from "lodash.get";
 import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Spinner } from "@blueprintjs/core";
 
@@ -29,6 +30,7 @@ const Schema = Yup.object().shape({
 export const Alarm = () => {
   const { user } = useAccount();
   const client = useClient();
+  const history = useHistory();
   const [device, setDevice] = useState({
     id: null,
     config: {
@@ -38,14 +40,12 @@ export const Alarm = () => {
     }
   });
   useEffect(() => {
-    console.log(user);
     const fetch = async () => {
       const res = await client.service("devices").find({
         query: {
           patientId: user["patient.id"]
         }
       });
-      console.log(res);
       setDevice(res["data"][0]);
     }
     fetch()
@@ -73,14 +73,27 @@ export const Alarm = () => {
         },
       }}
       validationSchema={Schema}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
+      onSubmit={async (values, { setSubmitting, setErrors, errors }) => {
         console.log(values);
         if (!device["id"]) return;
+        const notApproved = Object.keys(values["medicine"]).reduce((prev, key) => {
+          if (!prev) return prev;
+          return Object.keys(_get(values, `medicine.${key}`)).reduce((p, k) => {
+            if (!p) return p;
+            if (_get(values, `medicine.${key}.${k}`)
+              !== _get(device, `config.${key}.${k}`)) {
+              return false;
+            }
+            setErrors({ submit: "Noting changed" });
+            return true;
+          }, true);
+        }, true);
+        if (notApproved) return;
         try {
           await client.service("devices").patch(device["id"], {
             config: values["medicine"],
           });
-          // history.go(0);
+          history.go(0);
         } catch (err) {
           console.error(err);
           setErrors({ submit: err.message });

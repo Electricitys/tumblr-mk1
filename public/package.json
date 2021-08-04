@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^3.47.0",
+    "@blueprintjs/datetime": "^3.23.6",
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@feathersjs/authentication-client": "^4.5.11",

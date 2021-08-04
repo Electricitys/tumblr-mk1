@@ -1,6 +1,11 @@
 const { Service } = require('feathers-sequelize');
 
 exports.Devices = class Devices extends Service {
+  constructor(options, app) {
+    super(options);
+    this.app = app;
+  }
+
   async create(data, params) {
     const defaultValue = {
       label: `device-${data['id']}${Date.now()}`,
@@ -23,6 +28,14 @@ exports.Devices = class Devices extends Service {
       connectionStatus: false,
       ...data
     };
-    return super.create(defaultValue, params);
+    return super.create(defaultValue, {
+      ...params,
+      sequelize: {
+        include: [{
+          model: this.app.service("patient").Model,
+          as: "patient"
+        }]
+      }
+    });
   }
 };

@@ -10,7 +10,7 @@ export const DeviceConnection = () => {
     if (device === null) return;
     setStatus(device["connectionStatus"]);
     client.service("devices").on("patched", (d) => {
-      console.log("device patched", d);
+      setStatus(d["connectionStatus"]);
     });
   }, [client, device]);
   return status ? "Connected" : "Disconnect";
