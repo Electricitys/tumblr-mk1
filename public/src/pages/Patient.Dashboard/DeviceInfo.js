@@ -22,16 +22,16 @@ export const DeviceInfo = ({ selectedSegment, setSelectedSegment }) => {
         value: "Connected"
       }, {
         type: "lvl3",
-        field: "Not set",
+        field: "00:00",
         value: "Not set"
       }, {
         type: "lvl2",
-        field: "01:00 AM",
-        value: "Amoxcilin"
+        field: "00:00",
+        value: "Not set"
       }, {
         type: "lvl1",
-        field: "05:00 AM",
-        value: "Amlodipine"
+        field: "00:00",
+        value: "Not set"
       }, {
         type: "tank",
         field: "Tank",
