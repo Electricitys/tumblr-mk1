@@ -1,6 +1,8 @@
+// Essential library
 #include <Arduino.h>
 
 #include <WiFi.h>
+#include <HTTPClient.h>
 
 #include <ArduinoJson.h>
 #include <arduino-timer.h>
@@ -30,22 +32,70 @@ int lvl1[] = {0, 0}; // hour, minute
 int lvl2[] = {0, 0}; // hour, minute
 int lvl3[] = {0, 0}; // hour, minute
 
+int sortedSetpoint[] = {1, 2, 3};
+int filterSetpoint[] = {0, 1, 2};
+
 int isReady = 0;
 int isRinging = 0;
 
-#include <LiquidCrystal_I2C.h>
+#define SCREEN_ADRESS 0x3D
+#define CLOCK_ADRESS 0x3D
+
+// I2C Library
 #include <Wire.h>
 
-LiquidCrystal_I2C lcd(0x38);
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#include <RTClib.h>
+
+Adafruit_SSD1306 display(128, 64, &Wire, -1);
+
+RTC_DS1307 rtc;
 
 Timer<2> task;
 
+String httpGet(String url) {
+  HTTPClient http;
+  http.begin(url.c_str());
+  int httpResponse = http.GET();
+
+  String payload = "0";
+
+  if(httpResponse > 0) {
+    payload = http.getString();
+  } else {
+    USE_SERIAL.printf("HTTP Request Failed: %d", httpResponse);
+  }
+
+  http.end();
+
+  return payload;
+}
+
+void writeDisplay(String text) {
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.println(text);
+  display.display();
+}
+
+void writeDisplay(int x, int y, String text) {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(x, y);
+  display.println(text);
+  display.display();
+}
+
 bool auth() {
   // creat JSON message for Socket.IO (event)
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(512);
   JsonArray array = doc.to<JsonArray>();
 
-  // add evnet name
+  // add event name
   // Hint: socket.on('event_name', ....
   array.add("create");
   array.add("authentication");
@@ -81,12 +131,66 @@ int getValue(String data, char separator, int index)
         strIndex[1] = (i == maxIndex) ? i+1 : i;
     }
   }
-
   return found>index ? data.substring(strIndex[0], strIndex[1]).toInt() : 0;
 }
 
+void sortSetpoint() {
+  int size = 3;
+  int a[size] = {filterSetpoint[0], filterSetpoint[1], filterSetpoint[2]};
+  sortedSetpoint[0] = 1;
+  sortedSetpoint[1] = 2;
+  sortedSetpoint[2] = 3;
+
+  // USE_SERIAL.println("Unsorted Array:");
+  // for(int i = 0; i<size; i++) {
+  //   USE_SERIAL.print(i);
+  //   USE_SERIAL.print(" ");
+  //   USE_SERIAL.print(filterSetpoint[i]);
+  //   USE_SERIAL.print(" ");
+  //   USE_SERIAL.print(sortedSetpoint[i]);
+  //   USE_SERIAL.println("");
+  // }
+
+  for(int i = 0; i<(size-1); i++) {
+    for(int o = 0; o<(size-(i+1)); o++) {
+      if(a[o] > a[o+1]) {
+        int t = a[o];
+        a[o] = a[o+1];
+        a[o+1] = t;
+        int m = sortedSetpoint[o];
+        sortedSetpoint[o] = sortedSetpoint[o+1];
+        sortedSetpoint[o+1] = m;
+      }
+    }
+  }
+
+  // USE_SERIAL.println("Sorted Array:");
+  // for(int i = 0; i<(size); i++) {
+  //   USE_SERIAL.print(a[i]);
+  //   USE_SERIAL.print(" ");
+  //   USE_SERIAL.print(i);
+  //   USE_SERIAL.print(" ");
+  //   USE_SERIAL.print(filterSetpoint[i]);
+  //   USE_SERIAL.print(" ");
+  //   USE_SERIAL.print(sortedSetpoint[i]);
+  //   USE_SERIAL.println(" ");
+  // }
+}
+
+void syncTime() {
+  // Time sync
+  int serverTime = httpGet("http://showcase.api.linx.twenty57.net/UnixTime/tounix?date=now").toInt();
+
+  if(serverTime > 0) {
+    // rtc.adjust(serverTime * 1000); // Multiply with 1000 for millis format
+    rtc.adjust(serverTime);
+  } else {
+    USE_SERIAL.printf("Sync time failed.");
+  }
+}
+
 void listenConfig(uint8_t * payload, size_t length) {
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(512);
   deserializeJson(doc, payload, length);
   String event = doc[0];
   JsonObject data = doc[1]["config"];
@@ -97,7 +201,15 @@ void listenConfig(uint8_t * payload, size_t length) {
     lvl2[0] = getValue(data["lvl2"]["time"], ':', 0);
     lvl2[1] = getValue(data["lvl2"]["time"], ':', 1);
     lvl3[0] = getValue(data["lvl3"]["time"], ':', 0);
-    lvl3[1] = getValue(data["lvl4"]["time"], ':', 1);
+    lvl3[1] = getValue(data["lvl3"]["time"], ':', 1);
+
+    filterSetpoint[0] = lvl1[0] + lvl1[1];
+    filterSetpoint[1] = lvl2[0] + lvl2[1];
+    filterSetpoint[2] = lvl3[0] + lvl3[1];
+
+    sortSetpoint();
+    syncTime();
+
     isReady = 1;
   }
 }
@@ -110,8 +222,6 @@ void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length)
     case sIOtype_CONNECT:
       USE_SERIAL.printf("[IOc] Connected to url: %s\n", payload);
       auth();
-      // join default namespace (no auto join in Socket.IO V3)
-      // socketIO.send(sIOtype_CONNECT, "/");
       break;
     case sIOtype_EVENT:
       USE_SERIAL.printf("[IOc] get event: %s\n", payload);
@@ -142,13 +252,33 @@ bool mechanic(void *) {
   } else {
     alarm(LOW);
   }
+
+  // Alarm logic
+  DateTime raw = rtc.now();
+  int now = raw.hour() + raw.minute();
+
+  for(int i = 0; i<3; i++) {
+    if(now > filterSetpoint[i]) {
+      isRinging = 1;
+      break;
+    }
+  }
+
   return true;
 }
 
 void setup() {
   // USE_SERIAL.begin(921600);
   USE_SERIAL.begin(115200);
-  lcd.begin(16, 2);
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADRESS)){
+    USE_SERIAL.printf("Screen not found.");
+  }
+
+  bool rtcReady = rtc.begin();
+  if(!rtcReady) {
+    USE_SERIAL.printf("RTC not found.");
+  }
 
   pinMode(pinRelay[0], OUTPUT);
   pinMode(pinRelay[1], OUTPUT);
@@ -167,8 +297,6 @@ void setup() {
     delay(1000);
   }
 
-  lcd.home();
-
   // disable AP
   if(WiFi.getMode() & WIFI_AP) {
     WiFi.softAPdisconnect(true);
@@ -178,28 +306,21 @@ void setup() {
 
   WiFi.disconnect();
 
-  lcd.print("Connecting to:");
-  lcd.setCursor(0,1);
-  lcd.print(ssid);
-  lcd.print("...");
+  writeDisplay(0, 0, "Connecting to:");
+  writeDisplay(0, 2, ssid);
+  writeDisplay("...");
 
   WiFi.begin(ssid, pass);
   while(WiFi.status() != WL_CONNECTED) {
     delay(100);
   }
 
-  lcd.clear();
-  lcd.home();
-
   String ip = WiFi.localIP().toString();
   USE_SERIAL.printf("[SETUP] WiFi Connected %s\n", ip.c_str());
 
-  lcd.print(ssid);
-  lcd.print(" OK");
-
-  lcd.setCursor(0,1);
-  lcd.print("IP: ");
-  lcd.print(ip.c_str());
+  writeDisplay("OK");
+  writeDisplay(0, 4, "IP:");
+  writeDisplay(ip.c_str());
 
   // server address, port and URL
   socketIO.begin(host, port);
@@ -208,6 +329,13 @@ void setup() {
   socketIO.onEvent(socketIOEvent);
 
   task.every(500, mechanic);
+
+  if(rtcReady) {
+    if(!rtc.isrunning()) {
+      USE_SERIAL.printf("RTC not running,");
+    }
+    syncTime();
+  }
 
 }
 
