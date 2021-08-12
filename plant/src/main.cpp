@@ -32,8 +32,11 @@ int lvl1[] = {0, 0}; // hour, minute
 int lvl2[] = {0, 0}; // hour, minute
 int lvl3[] = {0, 0}; // hour, minute
 
+String lvlName[] = {"Not set", "Not set",  "Not set"};
+
 int sortedSetpoint[] = {1, 2, 3};
 int filterSetpoint[] = {0, 1, 2};
+int alarmCounter = 0;
 
 int isReady = 0;
 int isRinging = 0;
@@ -65,6 +68,8 @@ String httpGet(String url) {
 
   if(httpResponse > 0) {
     payload = http.getString();
+    USE_SERIAL.print("Payload Time: ");
+    USE_SERIAL.println(payload);
   } else {
     USE_SERIAL.printf("HTTP Request Failed: %d", httpResponse);
   }
@@ -179,13 +184,15 @@ void sortSetpoint() {
 
 void syncTime() {
   // Time sync
-  int serverTime = httpGet("http://showcase.api.linx.twenty57.net/UnixTime/tounix?date=now").toInt();
+  String payload = httpGet("http://showcase.api.linx.twenty57.net/UnixTime/tounix?date=now");
+  payload.replace("\"", "");
+  uint32_t serverTime = payload.toInt();
 
   if(serverTime > 0) {
     // rtc.adjust(serverTime * 1000); // Multiply with 1000 for millis format
     rtc.adjust(serverTime);
   } else {
-    USE_SERIAL.printf("Sync time failed.");
+    USE_SERIAL.printf("Sync time failed.\n");
   }
 }
 
@@ -203,6 +210,10 @@ void listenConfig(uint8_t * payload, size_t length) {
     lvl3[0] = getValue(data["lvl3"]["time"], ':', 0);
     lvl3[1] = getValue(data["lvl3"]["time"], ':', 1);
 
+    lvlName[0] = data["lvl1"]["name"].as<String>();
+    lvlName[1] = data["lvl2"]["name"].as<String>();
+    lvlName[2] = data["lvl3"]["name"].as<String>();
+
     filterSetpoint[0] = lvl1[0] + lvl1[1];
     filterSetpoint[1] = lvl2[0] + lvl2[1];
     filterSetpoint[2] = lvl3[0] + lvl3[1];
@@ -212,6 +223,31 @@ void listenConfig(uint8_t * payload, size_t length) {
 
     isReady = 1;
   }
+}
+
+void sendActivity(String type, String message) {  // creat JSON message for Socket.IO (event)
+  DynamicJsonDocument doc(512);
+  JsonArray array = doc.to<JsonArray>();
+
+  // add event name
+  // Hint: socket.on('event_name', ....
+  array.add("create");
+  array.add("activity");
+
+  // add payload (parameters) for the event
+  JsonObject data = array.createNestedObject();
+  data["type"] = type;
+  data["message"] = message;
+
+  // JSON to String (serializion)
+  String output;
+  serializeJson(doc, output);
+
+  // Send event
+  socketIO.sendEVENT(output);
+
+  // Print JSON for debugging
+  USE_SERIAL.println(output);
 }
 
 void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length) {
@@ -243,23 +279,37 @@ bool getTouchButton() {
 bool mechanic(void *) {
   if(!isReady) return true;
 
+  // Alarm logic
+  DateTime raw = rtc.now();
+  int now = raw.hour() + raw.minute();
+
   if(isRinging) {
     alarm(HIGH);
     if(getTouchButton()) {
       isRinging = 0;
+      String message = "Mengonsumsi obat";
+      message += lvlName[sortedSetpoint[alarmCounter]];
+      sendActivity("primary", message);
+      if(alarmCounter >= 2) {
+        alarmCounter = 0;
+      }
+    }
+    if(now > filterSetpoint[alarmCounter] + 20) {
+      String message = "Tidak mengonsumsi obat";
+      message += lvlName[sortedSetpoint[alarmCounter]];
+      sendActivity("danger", message);
     }
     return true;
   } else {
     alarm(LOW);
   }
 
-  // Alarm logic
-  DateTime raw = rtc.now();
-  int now = raw.hour() + raw.minute();
-
   for(int i = 0; i<3; i++) {
     if(now > filterSetpoint[i]) {
-      isRinging = 1;
+      if(alarmCounter < i) {
+        isRinging = 1;
+        alarmCounter = i;
+      }
       break;
     }
   }
