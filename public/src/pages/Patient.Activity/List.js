@@ -14,7 +14,6 @@ export const List = () => {
   const [list, setList] = useState([]);
   const [date, setDate] = useState(new Date());
   useEffect(() => {
-    console.log(user);
     async function fetch() {
       const res = await client.service("activity").find({
         query: {
@@ -33,7 +32,6 @@ export const List = () => {
           date: moment(value.createdAt).format("hh:mm A")
         }
       }));
-      console.log(res.data);
     }
     fetch();
   }, [client, user, date]);
