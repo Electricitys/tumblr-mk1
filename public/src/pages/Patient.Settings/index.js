@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
-import { Button } from "@blueprintjs/core";
+import { AnchorButton, Button } from "@blueprintjs/core";
 import { Box } from "../../components/Grid"
 import { User } from "./User";
 import { Alarm } from "./Alarm";
@@ -39,6 +39,14 @@ export const Settings = () => {
               fontSize: 4,
             }}
           >Settings</Box>
+          <AnchorButton
+            href="https://smartmedicaltumbler.wordpress.com/"
+            target="_blank"
+            minimal={true}
+            large={true}
+            icon="help"
+            rel="noreferrer"
+          />
           <Button
             minimal={true}
             large={true}

@@ -9,7 +9,7 @@ import { Formik } from "formik";
 
 const Schema = Yup.object().shape({
   email: Yup.string().required("Fill with your email."),
-  password: Yup.string().required("Fill with your email."),
+  password: Yup.string().required("Fill with your password."),
 })
 
 export const Login = () => {

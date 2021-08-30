@@ -26,7 +26,6 @@ export const Landing = () => {
           }}
         >Selamat Datang</Box>
         <Box
-          as="p"
           sx={{
             mt: 5,
             mx: 3,
@@ -34,7 +33,8 @@ export const Landing = () => {
             color: "gray.4"
           }}
         >
-          Project ini diperuntukan kepada dokter dan pasien sebagai monitor perkembangan pasien dengan menganalisa aktifitas frekuensi obat yang diminum.
+          <p>Project ini diperuntukan kepada dokter dan pasien sebagai monitor perkembangan pasien dengan menganalisa aktifitas frekuensi obat yang diminum.</p>
+          <p>Baca petunjuk <a href="https://smartmedicaltumbler.wordpress.com/" rel="noreferrer" target="_blank">disini</a> sebelum mengoperasikan.</p>
         </Box>
         <Box sx={{ px: 3, my: 3, mt: 5, }}>
           <Button

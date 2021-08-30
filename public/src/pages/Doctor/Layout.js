@@ -1,6 +1,6 @@
 import { Box, Flex } from "../../components/Grid"
 import { Helmet } from "react-helmet";
-import { Button } from "@blueprintjs/core";
+import { AnchorButton, Button } from "@blueprintjs/core";
 import { useHistory } from "react-router-dom";
 import { List } from "./List";
 
@@ -35,6 +35,14 @@ export const Layout = () => {
                 fontSize: 4,
               }}
             >Patient Activity</Box>
+            <AnchorButton
+              href="https://smartmedicaltumbler.wordpress.com/"
+              target="_blank"
+              minimal={true}
+              large={true}
+              icon="help"
+              rel="noreferrer"
+            />
             <Button
               minimal={true}
               large={true}
