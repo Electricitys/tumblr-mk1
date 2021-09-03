@@ -127,8 +127,8 @@ export const Register = () => {
                       value={values["role"]}
                       onChange={handleChange}
                       options={[
-                        { label: "Pasien", value: "patient" },
-                        { label: "Dokter", value: "doctor" },
+                        { label: "Pasien / Pendamping Pasien", value: "patient" },
+                        { label: "Dokter / Petugas Kesehatan", value: "doctor" },
                       ]}
                       intent={errors["role"] ? "danger" : "none"}
                     />
